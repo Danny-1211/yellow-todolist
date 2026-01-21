@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import loginBanner from "../assets/images/login.png";
 import logo from "../assets/images/logo.svg";
-import { checkSignIn } from "../services/login";
+import { checkSignIn, signUp } from "../services/login";
 
 function LoginField({
   setEmail,
@@ -11,6 +11,7 @@ function LoginField({
   handleLogin,
   showEmailInputError,
   showPasswordInputError,
+  setIsRegister,
 }) {
   return (
     <section className="inputs flex flex-col items-center justify-center gap-8 lg:gap-6">
@@ -61,7 +62,7 @@ function LoginField({
         >
           <p className="text-[#FFFFFF] font-bold">登入</p>
         </button>
-        <button type="button">
+        <button type="button" onClick={() => setIsRegister(true)}>
           <p className="text-[#333333] font-bold">註冊帳號</p>
         </button>
       </div>
@@ -69,7 +70,22 @@ function LoginField({
   );
 }
 
-function RegisterField() {
+function RegisterField({
+  setEmail,
+  setNickname,
+  setPassword,
+  setEnsurePassword,
+  nickname,
+  email,
+  password,
+  ensurePassword,
+  showNickNameInputError,
+  showEnsurePasswordInputError,
+  showEmailInputError,
+  showPasswordInputError,
+  handleRegister,
+  setIsRegister,
+}) {
   return (
     <section className="inputs flex flex-col items-center justify-center gap-8 lg:gap-6">
       <div className="inputs-title">
@@ -81,58 +97,75 @@ function RegisterField() {
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="請輸入Email"
             required
           ></input>
-          <span className="text-[14px] font-bold text-[#D87355]">
-            此欄位不可為空
-          </span>
+          {showEmailInputError ? (
+            <span className="text-[14px] font-bold text-[#D87355]">
+              {showEmailInputError}
+            </span>
+          ) : null}
         </div>
         <div className="input-nickname flex flex-col justify-start items-start gap-1">
           <label className="text-[14px] font-bold">您的暱稱</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
             type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
             placeholder="請輸入暱稱"
             required
           ></input>
-          <span className="text-[14px] font-bold text-[#D87355]">
-            此欄位不可為空
-          </span>
+          {showNickNameInputError ? (
+            <span className="text-[14px] font-bold text-[#D87355]">
+              {showNickNameInputError}
+            </span>
+          ) : null}
         </div>
         <div className="input-password flex flex-col justify-start items-start gap-1">
           <label className="text-[14px] font-bold">密碼</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="請輸入密碼"
             required
           />
-          <span className="text-[14px] font-bold text-[#D87355]">
-            此欄位不可為空
-          </span>
+          {showPasswordInputError ? (
+            <span className="text-[14px] font-bold text-[#D87355]">
+              {showPasswordInputError}
+            </span>
+          ) : null}
         </div>
         <div className="input-password-ensure flex flex-col justify-start items-start gap-1">
           <label className="text-[14px] font-bold">再次輸入密碼</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
             type="password"
+            value={ensurePassword}
+            onChange={(e) => setEnsurePassword(e.target.value)}
             placeholder="請再次輸入密碼"
             required
           ></input>
-          <span className="text-[14px] font-bold text-[#D87355]">
-            此欄位不可為空
-          </span>
+          {showEnsurePasswordInputError ? (
+            <span className="text-[14px] font-bold text-[#D87355]">
+              {showEnsurePasswordInputError}
+            </span>
+          ) : null}
         </div>
       </div>
       <div className="inputs-btn flex flex-col gap-6">
         <button
           className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px]"
           type="button"
+          onClick={handleRegister}
         >
           <p className="text-[#FFFFFF] font-bold">註冊帳號</p>
         </button>
-        <button type="button">
+        <button type="button" onClick={() => setIsRegister(false)}>
           <p className="text-[#333333] font-bold">登入</p>
         </button>
       </div>
@@ -142,10 +175,16 @@ function RegisterField() {
 
 function Login() {
   const [isRegister, setIsRegister] = useState(false);
+
   const [showEmailInputError, setShowEmailInputError] = useState("");
   const [showPasswordInputError, setShowPasswordInputError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [ensurePassword, setEnsurePassword] = useState("");
+  const [showNickNameInputError, setShowNickNameInputError] = useState("");
+  const [showEnsurePasswordInputError, setShowEnsurePasswordInputError] =
+    useState("");
 
   const handleLogin = async () => {
     setShowEmailInputError("");
@@ -171,7 +210,6 @@ function Login() {
       };
 
       const res = await checkSignIn(para);
-      console.log("res", res);
 
       if (res.status) {
         if (res.token) {
@@ -183,6 +221,52 @@ function Login() {
       }
     } catch (err) {
       console.error("登入失敗:", err);
+    }
+  };
+
+  const handleRegister = async () => {
+    setShowEmailInputError("");
+    setShowPasswordInputError("");
+    setShowEnsurePasswordInputError("");
+    setShowNickNameInputError("");
+
+    let hasError = false;
+    if (!email) {
+      setShowEmailInputError("此欄位不可為空");
+      hasError = true;
+    }
+
+    if (!password) {
+      setShowPasswordInputError("此欄位不可為空");
+      hasError = true;
+    }
+
+    if (!nickname) {
+      setShowNickNameInputError("此欄位不可為空");
+      hasError = true;
+    }
+
+    if (!ensurePassword) {
+      setShowEnsurePasswordInputError("此欄位不可為空");
+      hasError = true;
+    }
+
+    if (ensurePassword !== password) {
+      setShowEnsurePasswordInputError("第二次輸入密碼需要與第一次一致");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    try {
+      const para = {
+        email: email,
+        password: password,
+        nickname: nickname,
+      };
+      const res = await signUp(para);
+    } catch (err) {
+      console.error("註冊失敗", err);
     }
   };
 
@@ -198,13 +282,29 @@ function Login() {
           <img src={loginBanner} alt="banner" className="hidden lg:block" />
         </section>
         {isRegister ? (
-          <RegisterField />
+          <RegisterField
+            setEmail={setEmail}
+            setNickname={setNickname}
+            setPassword={setPassword}
+            setEnsurePassword={setEnsurePassword}
+            nickname={nickname}
+            email={email}
+            password={password}
+            ensurePassword={ensurePassword}
+            showNickNameInputError={showNickNameInputError}
+            showEnsurePasswordInputError={showEnsurePasswordInputError}
+            showEmailInputError={showEmailInputError}
+            showPasswordInputError={showPasswordInputError}
+            handleRegister={handleRegister}
+            setIsRegister={setIsRegister}
+          />
         ) : (
           <LoginField
             setPassword={setPassword}
             setEmail={setEmail}
             showEmailInputError={showEmailInputError}
             showPasswordInputError={showPasswordInputError}
+            setIsRegister={setIsRegister}
             email={email}
             password={password}
             handleLogin={handleLogin}
