@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense } from "react";
 import loginBanner from "../assets/images/login.png";
 import logo from "../assets/images/logo.svg";
 import { checkSignIn, signUp } from "../services/login";
-
+import { useNavigate } from 'react-router-dom';
 function LoginField({
   setEmail,
   setPassword,
@@ -14,14 +14,14 @@ function LoginField({
   setIsRegister,
 }) {
   return (
-    <section className="inputs flex flex-col items-center justify-center gap-8 lg:gap-6">
+    <section className="flex flex-col items-center justify-center gap-8 inputs lg:gap-6">
       <div className="inputs-title">
         <p className="text-xl font-bold text-[#333333] lg:text-2xl">
           最實用的線上代辦事項服務
         </p>
       </div>
-      <div className="inputs-group flex flex-col items-between justify-center gap-4">
-        <div className="input-email flex flex-col justify-start items-start gap-1">
+      <div className="flex flex-col justify-center gap-4 inputs-group items-between">
+        <div className="flex flex-col items-start justify-start gap-1 input-email">
           <label className="text-[14px] font-bold">Email</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
@@ -37,7 +37,7 @@ function LoginField({
             </span>
           ) : null}
         </div>
-        <div className="input-password flex flex-col justify-start items-start gap-1">
+        <div className="flex flex-col items-start justify-start gap-1 input-password">
           <label className="text-[14px] font-bold">密碼</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
@@ -54,7 +54,7 @@ function LoginField({
           ) : null}
         </div>
       </div>
-      <div className="inputs-btn flex flex-col gap-6">
+      <div className="flex flex-col gap-6 inputs-btn">
         <button
           className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px]"
           type="button"
@@ -87,12 +87,12 @@ function RegisterField({
   setIsRegister,
 }) {
   return (
-    <section className="inputs flex flex-col items-center justify-center gap-8 lg:gap-6">
+    <section className="flex flex-col items-center justify-center gap-8 inputs lg:gap-6">
       <div className="inputs-title">
         <p className="text-xl font-bold text-[#333333] lg:text-2xl">註冊帳號</p>
       </div>
-      <div className="inputs-group flex flex-col items-between justify-center gap-4">
-        <div className="input-email flex flex-col justify-start items-start gap-1">
+      <div className="flex flex-col justify-center gap-4 inputs-group items-between">
+        <div className="flex flex-col items-start justify-start gap-1 input-email">
           <label className="text-[14px] font-bold">Email</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
@@ -108,7 +108,7 @@ function RegisterField({
             </span>
           ) : null}
         </div>
-        <div className="input-nickname flex flex-col justify-start items-start gap-1">
+        <div className="flex flex-col items-start justify-start gap-1 input-nickname">
           <label className="text-[14px] font-bold">您的暱稱</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
@@ -124,7 +124,7 @@ function RegisterField({
             </span>
           ) : null}
         </div>
-        <div className="input-password flex flex-col justify-start items-start gap-1">
+        <div className="flex flex-col items-start justify-start gap-1 input-password">
           <label className="text-[14px] font-bold">密碼</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
@@ -140,7 +140,7 @@ function RegisterField({
             </span>
           ) : null}
         </div>
-        <div className="input-password-ensure flex flex-col justify-start items-start gap-1">
+        <div className="flex flex-col items-start justify-start gap-1 input-password-ensure">
           <label className="text-[14px] font-bold">再次輸入密碼</label>
           <input
             className="bg-[#FFFFFF] w-76 px-4 py-3 border-[#FFFFFF] rounded-[10px]"
@@ -157,7 +157,7 @@ function RegisterField({
           ) : null}
         </div>
       </div>
-      <div className="inputs-btn flex flex-col gap-6">
+      <div className="flex flex-col gap-6 inputs-btn">
         <button
           className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px]"
           type="button"
@@ -174,8 +174,8 @@ function RegisterField({
 }
 
 function Login() {
+  const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
-
   const [showEmailInputError, setShowEmailInputError] = useState("");
   const [showPasswordInputError, setShowPasswordInputError] = useState("");
   const [email, setEmail] = useState("");
@@ -215,6 +215,7 @@ function Login() {
         if (res.token) {
           localStorage.setItem("todoToken", res.token);
         }
+        navigate('/home', { replace: true });
       } else {
         setShowEmailInputError(res.message);
         setShowPasswordInputError(res.message);
@@ -265,6 +266,9 @@ function Login() {
         nickname: nickname,
       };
       const res = await signUp(para);
+      if(res.status) {
+        setIsRegister(false);
+      }
     } catch (err) {
       console.error("註冊失敗", err);
     }
