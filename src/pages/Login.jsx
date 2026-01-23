@@ -214,6 +214,7 @@ function Login() {
       if (res.status) {
         if (res.token) {
           localStorage.setItem("todoToken", res.token);
+          localStorage.setItem("nickName", res.nickname);
         }
         navigate('/home', { replace: true });
       } else {
