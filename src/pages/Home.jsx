@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
+import { getTodos } from "../services/home";
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
@@ -44,10 +45,30 @@ const tabs = [
 
 function Home() {
   const [tab, setTab] = useState("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [todolist, setTodoList] = useState([]);
+  const [unfinishItemsCount, setUnfinishItemsCount] = useState(0);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await getTodos();
+        setTodoList(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false); // 結束抓取
+      }
+    };
+    fetchData();
+  }, []);
 
-  const unfinishItemsCount = fakeData.filter(item =>{
-    return item.status == false
-  }).length
+  useEffect(() => {
+    const unfinishCount = todolist.filter((item) => {
+      return item.status == false;
+    }).length;
+    setUnfinishItemsCount(unfinishCount);
+  }, [todolist]);
 
   return (
     <div className="w-full h-screen bg-[#FFD370] lg:bg-[linear-gradient(172.7deg,#FFD370_5.12%,#FFD370_53.33%,#FFD370_53.44%,#FFFFFF_53.45%,#FFFFFF_94.32%)]">
@@ -76,7 +97,7 @@ function Home() {
           </div>
         </section>
         <section className="flex flex-col items-start justify-start w-full bg-white rounded-[10px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.15)] max-w-78 lg:max-w-125 ">
-          <div className="filter-btns w-full flex   text-center max-w-78 lg:max-w-125">
+          <div className="flex w-full text-center filter-btns max-w-78 lg:max-w-125">
             {tabs.map((item) => (
               <button
                 key={item.id}
@@ -91,34 +112,38 @@ function Home() {
               </button>
             ))}
           </div>
-          <div className="list  w-full px-4 pb-4 flex flex-col items-center justify-center gap-4">
-            {fakeData.map((item, index) => {
-              return (
-                <div
-                  key={index}
-                  className="group flex items-center justify-between w-full transition-colors  border-b border-[#E5E5E5] hover:bg-[#FAFAFA] lg:border-0"
-                >
-                  <div className="group  flex  py-4 w-full lg:border-b lg:border-[#E5E5E5]">
-                    <div className="item-content flex gap-4">
-                      {item.status ? (
-                        <img src={checked} alt="checked" />
-                      ) : (
-                        <div className="w-5 h-5 bg-[#FFFFFF] border border-[#9F9A91] rounded-[5px]"></div>
-                      )}
-                      <label htmlFor="check-1" className={`${item.status ? "line-through text-[#9F9A91]": ""}`}>{item.content}</label>
+          <div className="flex flex-col items-center justify-center w-full gap-4 px-4 pb-4 list">
+            {isLoading ? (
+              <p>資料讀取中...</p>
+            ) : (
+              todolist.map((item, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="group flex items-center justify-between w-full transition-colors  border-b border-[#E5E5E5] hover:bg-[#FAFAFA] lg:border-0"
+                  >
+                    <div className="group  flex  py-4 w-full lg:border-b lg:border-[#E5E5E5]">
+                      <div className="flex gap-4 item-content">
+                        {item.status ? (
+                          <img src={checked} alt="checked" />
+                        ) : (
+                          <div className="w-5 h-5 bg-[#FFFFFF] border border-[#9F9A91] rounded-[5px]"></div>
+                        )}
+                        <label
+                          htmlFor="check-1"
+                          className={`${item.status ? "line-through text-[#9F9A91]" : ""}`}
+                        >
+                          {item.content}
+                        </label>
+                      </div>
+                    </div>
+                    <div className="transition-opacity duration-200 opacity-100 cursor-pointer item-close lg:opacity-0 lg:group-hover:opacity-100">
+                      <img src={close} alt="close" />
                     </div>
                   </div>
-                  <div
-                    className="item-close cursor-pointer opacity-100 
-                    lg:opacity-0 
-                    lg:group-hover:opacity-100 
-                    transition-opacity duration-200"
-                  >
-                    <img src={close} alt="close" />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
           <div className="unfinish-count w-full px-4 pb-4 font-normal text-[#333333] text-[14px]">
             <p>{`${unfinishItemsCount} 個待完成項目`}</p>
