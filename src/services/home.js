@@ -45,7 +45,27 @@ async function addTodo(para) {
   }
 }
 
+async function deleteTodo(id) {
+  const token = localStorage.getItem('todoToken');
+  if(!token) {
+    return [];
+  }
+
+  try {
+    const response = await axios.delete(`${API_PATH.BASE_URL + API_PATH.TODOS_URL + id}`, {
+      headers: {
+        'Authorization': `${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('error', error);
+    return error
+  }
+}
+
 export {
   getTodos,
-  addTodo
+  addTodo,
+  deleteTodo
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getTodos, addTodo } from "../services/home";
+import { getTodos, addTodo, deleteTodo } from "../services/home";
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
@@ -29,7 +29,7 @@ function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   // 初始化拿一次
   useEffect(() => {
@@ -55,9 +55,18 @@ function Home() {
     try {
       await addTodo(para);
       setNewItemInputValue("");
-      await fetchData(); 
+      await fetchData();
     } catch (err) {
       console.error("新增失敗", err);
+    }
+  };
+
+  const deleteTodoItem = async (id) => {
+    try {
+      await deleteTodo(id);
+      await fetchData();
+    } catch (err) {
+      console.error("刪除失敗", err);
     }
   };
 
@@ -133,7 +142,10 @@ function Home() {
                         </label>
                       </div>
                     </div>
-                    <div className="transition-opacity duration-200 opacity-100 cursor-pointer item-close lg:opacity-0 lg:group-hover:opacity-100">
+                    <div
+                      className="transition-opacity duration-200 opacity-100 cursor-pointer item-close lg:opacity-0 lg:group-hover:opacity-100"
+                      onClick={() => deleteTodoItem(item.id)}
+                    >
                       <img src={close} alt="close" />
                     </div>
                   </div>
