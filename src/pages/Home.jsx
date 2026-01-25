@@ -1,41 +1,9 @@
-import { useState, useEffect, use } from "react";
-import { getTodos } from "../services/home";
+import { useState, useEffect, useCallback } from "react";
+import { getTodos, addTodo } from "../services/home";
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
 import close from "../assets/images/close.svg";
-const fakeData = [
-  {
-    id: "123456789",
-    content: "把冰箱發霉的檸檬拿去丟",
-    status: false,
-  },
-  {
-    id: "123123123",
-    content: "打電話叫媽媽匯款給我",
-    status: true,
-  },
-  {
-    id: "546453413",
-    content: "整理電腦資料夾",
-    status: false,
-  },
-  {
-    id: "653265214",
-    content: "繳電費水費瓦斯費",
-    status: true,
-  },
-  {
-    id: "741236598",
-    content: "約vicky禮拜三泡溫泉",
-    status: false,
-  },
-  {
-    id: "985698214",
-    content: "約ada禮拜四吃晚餐",
-    status: false,
-  },
-];
 
 const tabs = [
   { id: "all", label: "全部" },
@@ -48,27 +16,50 @@ function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [todolist, setTodoList] = useState([]);
   const [unfinishItemsCount, setUnfinishItemsCount] = useState(0);
+  const [newIteminputValue, setNewItemInputValue] = useState("");
+
+  // 抓到清單列表
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await getTodos();
+      setTodoList(res.data || []);
+    } catch (err) {
+      console.error("抓取失敗", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [])
+
+  // 初始化拿一次
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await getTodos();
-        setTodoList(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false); // 結束抓取
-      }
-    };
     fetchData();
   }, []);
 
+  // 拿到資料之後算出現在未完成的清單項目有多少
   useEffect(() => {
     const unfinishCount = todolist.filter((item) => {
       return item.status == false;
     }).length;
     setUnfinishItemsCount(unfinishCount);
   }, [todolist]);
+
+  // 新增清單項目
+  const addTodoItem = async () => {
+    if (!newIteminputValue) {
+      return;
+    }
+    const para = {
+      content: newIteminputValue,
+    };
+    try {
+      await addTodo(para);
+      setNewItemInputValue("");
+      await fetchData(); 
+    } catch (err) {
+      console.error("新增失敗", err);
+    }
+  };
 
   return (
     <div className="w-full h-screen bg-[#FFD370] lg:bg-[linear-gradient(172.7deg,#FFD370_5.12%,#FFD370_53.33%,#FFD370_53.44%,#FFFFFF_53.45%,#FFFFFF_94.32%)]">
@@ -90,8 +81,13 @@ function Home() {
               type="text"
               className="px-4 py-3 bg-transparent grow focus:outline-none"
               placeholder="新增待辦事項"
+              value={newIteminputValue}
+              onChange={(e) => setNewItemInputValue(e.target.value)}
             />
-            <button className="bg-[#333333] w-10 h-10 py-[9.8px] px-2.5 rounded-[10px] flex items-center justify-center cursor-pointer">
+            <button
+              className="bg-[#333333] w-10 h-10 py-[9.8px] px-2.5 rounded-[10px] flex items-center justify-center cursor-pointer"
+              onClick={() => addTodoItem()}
+            >
               <img className="w-5 h-5" src={add} alt="add" />
             </button>
           </div>

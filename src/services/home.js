@@ -8,7 +8,6 @@ const API_PATH = {
 
 async function getTodos() {
   const token = localStorage.getItem('todoToken');
-  
   if(!token) {
     return [];
   }
@@ -19,14 +18,34 @@ async function getTodos() {
         'Authorization': `${token}`
       }
     });
-    // console.log('res', response.data.data)
     return response.data;
   } catch (error) {
     console.error('error', error);
-    return error.response.data
+    return error
+  }
+}
+
+async function addTodo(para) {
+  const token = localStorage.getItem('todoToken');
+  
+  if(!token) {
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${API_PATH.BASE_URL + API_PATH.TODOS_URL}`, para, {
+      headers: {
+        'Authorization': `${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('error', error);
+    return error
   }
 }
 
 export {
-  getTodos
+  getTodos,
+  addTodo
 }
