@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getTodos, addTodo, deleteTodo } from "../services/home";
+import { getTodos, addTodo, deleteTodo, changeTodoStatus} from "../services/home";
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
@@ -70,6 +70,15 @@ function Home() {
     }
   };
 
+  const switchStatus = async (id) => {
+    try {
+      await changeTodoStatus(id);
+      await fetchData();
+    } catch (err) {
+      console.error("更新狀態失敗", err)
+    }
+  }
+
   return (
     <div className="w-full h-screen bg-[#FFD370] lg:bg-[linear-gradient(172.7deg,#FFD370_5.12%,#FFD370_53.33%,#FFD370_53.44%,#FFFFFF_53.45%,#FFFFFF_94.32%)]">
       <nav className="flex items-center justify-between w-full pt-4 mx-auto max-w-78 lg:max-w-240">
@@ -128,7 +137,7 @@ function Home() {
                     className="group flex items-center justify-between w-full transition-colors  border-b border-[#E5E5E5] hover:bg-[#FAFAFA] lg:border-0"
                   >
                     <div className="group  flex  py-4 w-full lg:border-b lg:border-[#E5E5E5]">
-                      <div className="flex gap-4 item-content">
+                      <div className="flex gap-4 item-content" onClick={() => switchStatus(item.id)}>
                         {item.status ? (
                           <img src={checked} alt="checked" />
                         ) : (

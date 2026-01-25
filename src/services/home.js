@@ -8,7 +8,7 @@ const API_PATH = {
 
 async function getTodos() {
   const token = localStorage.getItem('todoToken');
-  if(!token) {
+  if (!token) {
     return [];
   }
 
@@ -27,8 +27,8 @@ async function getTodos() {
 
 async function addTodo(para) {
   const token = localStorage.getItem('todoToken');
-  
-  if(!token) {
+
+  if (!token) {
     return;
   }
 
@@ -47,7 +47,7 @@ async function addTodo(para) {
 
 async function deleteTodo(id) {
   const token = localStorage.getItem('todoToken');
-  if(!token) {
+  if (!token) {
     return [];
   }
 
@@ -64,8 +64,30 @@ async function deleteTodo(id) {
   }
 }
 
+async function changeTodoStatus(id) {
+  const token = localStorage.getItem('todoToken');
+  
+  if (!token) {
+    return [];
+  }
+
+  try {
+    const response = await axios.patch(`${API_PATH.BASE_URL + API_PATH.TODOS_URL + id + '/toggle'}`, {}, {
+      headers: {
+        'Authorization': `${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('error', error);
+    return error
+  }
+}
+
+
 export {
   getTodos,
   addTodo,
-  deleteTodo
+  deleteTodo,
+  changeTodoStatus
 }
