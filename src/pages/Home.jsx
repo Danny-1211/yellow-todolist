@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getTodos,
   addTodo,
@@ -6,6 +7,8 @@ import {
   changeTodoStatus,
   updateTodo,
 } from "../services/home";
+import { signOut } from "../services/login.js";
+
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
@@ -18,6 +21,7 @@ const tabs = [
 ];
 
 function Home() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [todolist, setTodoList] = useState([]);
@@ -97,7 +101,7 @@ function Home() {
     setEditTarget({ ...editTarget, content: e.target.value });
   };
 
-  // 典籍輸入框以外的地方就儲存
+  // 點擊輸入框以外的地方就儲存
   const submitUpdate = async () => {
     if (!editTarget.id || !editTarget.content.trim()) {
       return setEditTarget({ id: null, content: "" });
@@ -112,6 +116,18 @@ function Home() {
     }
   };
 
+  // 登出
+  const handleLogout = async (e) => {
+    try {
+      e.preventDefault();
+      await signOut();
+      localStorage.clear();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("登出失敗", err);
+    }
+  };
+
   return (
     <div className="w-full h-screen bg-[#FFD370] lg:bg-[linear-gradient(172.7deg,#FFD370_5.12%,#FFD370_53.33%,#FFD370_53.44%,#FFFFFF_53.45%,#FFFFFF_94.32%)]">
       <nav className="flex items-center justify-between w-full pt-4 mx-auto max-w-78 lg:max-w-240">
@@ -120,7 +136,7 @@ function Home() {
           <p className="hidden text-[#333333] font-bold lg:block">
             {localStorage.getItem("nickName")}
           </p>
-          <a href="#">
+          <a href="#" onClick={handleLogout}>
             <p className="font-normal text-[#333333]">登出</p>
           </a>
         </div>
