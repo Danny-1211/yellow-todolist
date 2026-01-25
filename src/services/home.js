@@ -84,10 +84,32 @@ async function changeTodoStatus(id) {
   }
 }
 
+async function updateTodo(para) {
+  const token = localStorage.getItem('todoToken');
+  
+  if (!token) {
+    return [];
+  }
+
+  try {
+    const response = await axios.put(`${API_PATH.BASE_URL + API_PATH.TODOS_URL + para.id }`, para, {
+      headers: {
+        'Authorization': `${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('error', error);
+    return error
+  }
+}
+
+
 
 export {
   getTodos,
   addTodo,
   deleteTodo,
-  changeTodoStatus
+  changeTodoStatus,
+  updateTodo
 }

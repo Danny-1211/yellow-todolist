@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { getTodos, addTodo, deleteTodo, changeTodoStatus} from "../services/home";
+import {
+  getTodos,
+  addTodo,
+  deleteTodo,
+  changeTodoStatus,
+  updateTodo,
+} from "../services/home";
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
@@ -17,7 +23,7 @@ function Home() {
   const [todolist, setTodoList] = useState([]);
   const [unfinishItemsCount, setUnfinishItemsCount] = useState(0);
   const [newIteminputValue, setNewItemInputValue] = useState("");
-
+  const [editTarget, setEditTarget] = useState({ id: null, content: "" });
   // 抓到清單列表
   const fetchData = useCallback(async () => {
     try {
@@ -61,6 +67,7 @@ function Home() {
     }
   };
 
+  // 刪除某一筆項目
   const deleteTodoItem = async (id) => {
     try {
       await deleteTodo(id);
@@ -70,14 +77,40 @@ function Home() {
     }
   };
 
+  // 切換事項狀態
   const switchStatus = async (id) => {
     try {
       await changeTodoStatus(id);
       await fetchData();
     } catch (err) {
-      console.error("更新狀態失敗", err)
+      console.error("更新狀態失敗", err);
     }
-  }
+  };
+
+  // 取得某個項目的 id 跟內容
+  const startEditing = ({ id, content }) => {
+    setEditTarget({ id: id, content: content });
+  };
+
+  // 開始編輯內容
+  const handleEditChange = (e) => {
+    setEditTarget({ ...editTarget, content: e.target.value });
+  };
+
+  // 典籍輸入框以外的地方就儲存
+  const submitUpdate = async () => {
+    if (!editTarget.id || !editTarget.content.trim()) {
+      return setEditTarget({ id: null, content: "" });
+    }
+
+    try {
+      await updateTodo({ id: editTarget.id, content: editTarget.content });
+      setEditTarget({ id: null, content: "" });
+      await fetchData();
+    } catch (err) {
+      console.error("修改失敗", err);
+    }
+  };
 
   return (
     <div className="w-full h-screen bg-[#FFD370] lg:bg-[linear-gradient(172.7deg,#FFD370_5.12%,#FFD370_53.33%,#FFD370_53.44%,#FFFFFF_53.45%,#FFFFFF_94.32%)]">
@@ -137,18 +170,36 @@ function Home() {
                     className="group flex items-center justify-between w-full transition-colors  border-b border-[#E5E5E5] hover:bg-[#FAFAFA] lg:border-0"
                   >
                     <div className="group  flex  py-4 w-full lg:border-b lg:border-[#E5E5E5]">
-                      <div className="flex gap-4 item-content" onClick={() => switchStatus(item.id)}>
+                      <div className="flex gap-4 item-content">
                         {item.status ? (
-                          <img src={checked} alt="checked" />
+                          <img
+                            src={checked}
+                            alt="checked"
+                            onClick={() => switchStatus(item.id)}
+                          />
                         ) : (
-                          <div className="w-5 h-5 bg-[#FFFFFF] border border-[#9F9A91] rounded-[5px]"></div>
+                          <div
+                            className="w-5 h-5 bg-[#FFFFFF] border border-[#9F9A91] rounded-[5px]"
+                            onClick={() => switchStatus(item.id)}
+                          ></div>
                         )}
-                        <label
-                          htmlFor="check-1"
-                          className={`${item.status ? "line-through text-[#9F9A91]" : ""}`}
-                        >
-                          {item.content}
-                        </label>
+                        {editTarget.id == item.id ? (
+                          <input
+                            type="text"
+                            className="grow border-b border-blue-500 focus:outline-none"
+                            value={editTarget.content}
+                            onChange={handleEditChange}
+                            onBlur={submitUpdate}
+                            autoFocus
+                          />
+                        ) : (
+                          <label
+                            className={`${item.status ? "line-through text-[#9F9A91]" : ""}`}
+                            onClick={() => startEditing(item)}
+                          >
+                            {item.content}
+                          </label>
+                        )}
                       </div>
                     </div>
                     <div
