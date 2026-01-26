@@ -12,7 +12,7 @@ const Loading = ({ loading }) => {
   if (!loading) return null;
   return (
     <div style={overlayStyle}>
-      <HashLoader color="#FFD370" size={30} />
+      <HashLoader color="#333333" size={30} />
     </div>
   );
 };
