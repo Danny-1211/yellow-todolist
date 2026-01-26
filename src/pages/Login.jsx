@@ -5,6 +5,7 @@ import logo from "../assets/images/logo.svg";
 import { checkSignIn, signUp } from "../services/login";
 import { useNavigate } from "react-router-dom";
 import { notify } from "../utils/toast.js";
+import Loading from "../components/Loading.jsx";
 function LoginField({
   setEmail,
   setPassword,
@@ -14,6 +15,7 @@ function LoginField({
   showEmailInputError,
   showPasswordInputError,
   setIsRegister,
+  isLoading,
 }) {
   return (
     <section className="flex flex-col items-center justify-center gap-8 inputs lg:gap-6">
@@ -57,13 +59,19 @@ function LoginField({
         </div>
       </div>
       <div className="flex flex-col gap-6 inputs-btn">
-        <button
-          className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px]"
-          type="button"
-          onClick={handleLogin}
-        >
-          <p className="text-[#FFFFFF] font-bold">登入</p>
-        </button>
+        {isLoading ? (
+          <Loading loading={isLoading} />
+        ) : (
+          <>
+            <button
+              className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px]"
+              type="button"
+              onClick={handleLogin}
+            >
+              <p className="text-[#FFFFFF] font-bold">登入</p>
+            </button>
+          </>
+        )}
         <button type="button" onClick={() => setIsRegister(true)}>
           <p className="text-[#333333] font-bold">註冊帳號</p>
         </button>
@@ -87,6 +95,7 @@ function RegisterField({
   showPasswordInputError,
   handleRegister,
   setIsRegister,
+  isLoading,
 }) {
   return (
     <section className="flex flex-col items-center justify-center gap-8 inputs lg:gap-6">
@@ -160,14 +169,24 @@ function RegisterField({
         </div>
       </div>
       <div className="flex flex-col gap-6 inputs-btn">
+        {isLoading ? (
+          <Loading loading={isLoading} />
+        ) : (
+          <>
+            <button
+              className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px] cursor-pointer"
+              type="button"
+              onClick={handleRegister}
+            >
+              <p className="text-[#FFFFFF] font-bold">註冊帳號</p>
+            </button>
+          </>
+        )}
         <button
-          className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px]"
+          className="cursor-pointer "
           type="button"
-          onClick={handleRegister}
+          onClick={() => setIsRegister(false)}
         >
-          <p className="text-[#FFFFFF] font-bold">註冊帳號</p>
-        </button>
-        <button type="button" onClick={() => setIsRegister(false)}>
           <p className="text-[#333333] font-bold">登入</p>
         </button>
       </div>
@@ -179,6 +198,7 @@ function Login() {
   const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
   const [showEmailInputError, setShowEmailInputError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [showPasswordInputError, setShowPasswordInputError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -206,6 +226,7 @@ function Login() {
     if (hasError) return;
 
     try {
+      setIsLoading(true);
       const para = {
         email: email,
         password: password,
@@ -227,6 +248,8 @@ function Login() {
       }
     } catch (err) {
       notify.error(err.message ? err.message : "登入失敗");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -265,6 +288,7 @@ function Login() {
     if (hasError) return;
 
     try {
+      setIsLoading(true);
       const para = {
         email: email,
         password: password,
@@ -273,12 +297,14 @@ function Login() {
       const res = await signUp(para);
       if (res.status) {
         setIsRegister(false);
-        notify.success(res.message ? res.message :"註冊成功");
+        notify.success(res.message ? res.message : "註冊成功");
       } else {
         notify.error(res.message ? res.message : "註冊失敗");
       }
     } catch (err) {
-      notify.error(err.message? err.message :"註冊失敗");
+      notify.error(err.message ? err.message : "註冊失敗");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -309,6 +335,7 @@ function Login() {
             showPasswordInputError={showPasswordInputError}
             handleRegister={handleRegister}
             setIsRegister={setIsRegister}
+            isLoading={isLoading}
           />
         ) : (
           <LoginField
@@ -320,6 +347,7 @@ function Login() {
             email={email}
             password={password}
             handleLogin={handleLogin}
+            isLoading={isLoading}
           />
         )}
       </main>

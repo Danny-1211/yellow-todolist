@@ -24,7 +24,7 @@ const tabs = [
 function Home() {
   const navigate = useNavigate();
   const [selectTab, setSelectTab] = useState({ id: "all", status: null });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [originTodoList, setTodoList] = useState([]); // 全部的項目列表
   const [showTodoList, setShowTodoList] = useState([]); // 依據 tab 過濾後的項目列表
   const [unfinishItemsCount, setUnfinishItemsCount] = useState(0); // 未完成的項目數量
