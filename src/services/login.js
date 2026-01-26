@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-
+import {getToken} from "../utils/storage.js"
 const API_PATH = {
   BASE_URL: import.meta.env.VITE_BASE_URL,
   SIGN_IN_URL: import.meta.env.VITE_API_SIGN_IN_URL,
@@ -29,7 +29,7 @@ async function signUp(para) { // 註冊
 }
 
 async function signOut() { // 登出
-  const token = localStorage.getItem('todoToken');
+  const token = getToken();
   if (!token) {
     return [];
   }

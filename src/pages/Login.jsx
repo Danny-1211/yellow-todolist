@@ -1,4 +1,5 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState } from "react";
+import { setToken, setNickName } from "../utils/storage";
 import loginBanner from "../assets/images/login.png";
 import logo from "../assets/images/logo.svg";
 import { checkSignIn, signUp } from "../services/login";
@@ -183,8 +184,7 @@ function Login() {
   const [nickname, setNickname] = useState("");
   const [ensurePassword, setEnsurePassword] = useState("");
   const [showNickNameInputError, setShowNickNameInputError] = useState("");
-  const [showEnsurePasswordInputError, setShowEnsurePasswordInputError] =
-    useState("");
+  const [showEnsurePasswordInputError, setShowEnsurePasswordInputError] = useState("");
 
   const handleLogin = async () => {
     setShowEmailInputError("");
@@ -213,8 +213,8 @@ function Login() {
 
       if (res.status) {
         if (res.token) {
-          localStorage.setItem("todoToken", res.token);
-          localStorage.setItem("nickName", res.nickname);
+          setToken(res.token ? res.token : null);
+          setNickName(res.nickname?res.nickname : "")
         }
         navigate('/home', { replace: true });
       } else {

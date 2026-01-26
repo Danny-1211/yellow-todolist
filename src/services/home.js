@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { getToken } from "../utils/storage.js"
 const API_PATH = {
   BASE_URL: import.meta.env.VITE_BASE_URL,
   TODOS_URL: import.meta.env.VITE_API_TODOS,
@@ -7,7 +7,7 @@ const API_PATH = {
 
 
 async function getTodos() {
-  const token = localStorage.getItem('todoToken');
+  const token =  getToken();
   if (!token) {
     return [];
   }
@@ -26,7 +26,7 @@ async function getTodos() {
 }
 
 async function addTodo(para) {
-  const token = localStorage.getItem('todoToken');
+  const token = getToken();
 
   if (!token) {
     return;
@@ -46,7 +46,7 @@ async function addTodo(para) {
 }
 
 async function deleteTodo(id) {
-  const token = localStorage.getItem('todoToken');
+  const token = getToken();
   if (!token) {
     return [];
   }
@@ -65,8 +65,8 @@ async function deleteTodo(id) {
 }
 
 async function changeTodoStatus(id) {
-  const token = localStorage.getItem('todoToken');
-  
+  const token = getToken();
+
   if (!token) {
     return [];
   }
@@ -85,14 +85,14 @@ async function changeTodoStatus(id) {
 }
 
 async function updateTodo(para) {
-  const token = localStorage.getItem('todoToken');
-  
+  const token = getToken();
+
   if (!token) {
     return [];
   }
 
   try {
-    const response = await axios.put(`${API_PATH.BASE_URL + API_PATH.TODOS_URL + para.id }`, para, {
+    const response = await axios.put(`${API_PATH.BASE_URL + API_PATH.TODOS_URL + para.id}`, para, {
       headers: {
         'Authorization': `${token}`
       }

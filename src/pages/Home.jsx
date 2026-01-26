@@ -8,7 +8,7 @@ import {
   updateTodo,
 } from "../services/home";
 import { signOut } from "../services/login.js";
-
+import {getNickName} from "../utils/storage.js";
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
@@ -148,7 +148,7 @@ function Home() {
         <img src={logo} alt="logo" />
         <div className="flex items-center justify-center items gap-10.25 lg:gap-6">
           <p className="hidden text-[#333333] font-bold lg:block">
-            {localStorage.getItem("nickName")}
+            {getNickName()}
           </p>
           <a href="#" onClick={handleLogout}>
             <p className="font-normal text-[#333333]">登出</p>
