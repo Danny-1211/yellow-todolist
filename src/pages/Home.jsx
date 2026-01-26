@@ -13,19 +13,21 @@ import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
 import close from "../assets/images/close.svg";
+import { use } from "react";
 
 const tabs = [
-  { id: "all", label: "全部" },
-  { id: "active", label: "待完成" },
-  { id: "completed", label: "已完成" },
+  { id: "all", label: "全部", status: null },
+  { id: "active", label: "待完成", status: false },
+  { id: "completed", label: "已完成", status: true },
 ];
 
 function Home() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState("all");
+  const [selectTab, setSelectTab] = useState({ id: "all", status: null });
   const [isLoading, setIsLoading] = useState(true);
-  const [todolist, setTodoList] = useState([]);
-  const [unfinishItemsCount, setUnfinishItemsCount] = useState(0);
+  const [originTodoList, setTodoList] = useState([]); // 全部的項目列表
+  const [showTodoList, setShowTodoList] = useState([]); // 依據 tab 過濾後的項目列表
+  const [unfinishItemsCount, setUnfinishItemsCount] = useState(0); // 未完成的項目數量
   const [newIteminputValue, setNewItemInputValue] = useState("");
   const [editTarget, setEditTarget] = useState({ id: null, content: "" });
   // 抓到清單列表
@@ -48,11 +50,23 @@ function Home() {
 
   // 拿到資料之後算出現在未完成的清單項目有多少
   useEffect(() => {
-    const unfinishCount = todolist.filter((item) => {
+    const unfinishCount = showTodoList.filter((item) => {
       return item.status == false;
     }).length;
     setUnfinishItemsCount(unfinishCount);
-  }, [todolist]);
+  }, [showTodoList]);
+
+  useEffect(() => {
+    if(selectTab.status == null) {
+      setShowTodoList(originTodoList)
+      return;
+    }
+    const filterListByTab = originTodoList.filter((item) => {
+        return item.status == selectTab.status;
+    })
+    setShowTodoList(filterListByTab);
+    
+  }, [originTodoList, selectTab]);
 
   // 新增清單項目
   const addTodoItem = async () => {
@@ -161,17 +175,22 @@ function Home() {
         </section>
         <section className="flex flex-col items-start justify-start w-full bg-white rounded-[10px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.15)] max-w-78 lg:max-w-125 ">
           <div className="flex w-full text-center filter-btns max-w-78 lg:max-w-125">
-            {tabs.map((item) => (
+            {tabs.map((tab) => (
               <button
-                key={item.id}
-                onClick={() => setTab(item.id)}
+                key={tab.id}
+                onClick={() =>
+                  setSelectTab({
+                    id: tab.id,
+                    status: tab.id == "all" ? null : tab.status,
+                  })
+                }
                 className={`flex-1 py-4 text-sm font-bold transition-colors cursor-pointer ${
-                  tab === item.id
+                  selectTab.id === tab.id
                     ? "text-[#333333] border-b-2 border-[#333333]"
                     : "text-[#9F9A91] border-b-2 border-[#9F9A91]"
                 }`}
               >
-                {item.label}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -179,7 +198,7 @@ function Home() {
             {isLoading ? (
               <p>資料讀取中...</p>
             ) : (
-              todolist.map((item, index) => {
+              showTodoList.map((item, index) => {
                 return (
                   <div
                     key={index}
@@ -202,7 +221,7 @@ function Home() {
                         {editTarget.id == item.id ? (
                           <input
                             type="text"
-                            className="grow border-b border-blue-500 focus:outline-none"
+                            className="border-b border-blue-500 grow focus:outline-none"
                             value={editTarget.content}
                             onChange={handleEditChange}
                             onBlur={submitUpdate}
