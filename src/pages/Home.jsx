@@ -14,6 +14,7 @@ import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
 import close from "../assets/images/close.svg";
 import { notify } from "../utils/toast.js";
+import Loading from "../components/Loading.jsx";
 const tabs = [
   { id: "all", label: "全部", status: null },
   { id: "active", label: "待完成", status: false },
@@ -23,7 +24,7 @@ const tabs = [
 function Home() {
   const navigate = useNavigate();
   const [selectTab, setSelectTab] = useState({ id: "all", status: null });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [originTodoList, setTodoList] = useState([]); // 全部的項目列表
   const [showTodoList, setShowTodoList] = useState([]); // 依據 tab 過濾後的項目列表
   const [unfinishItemsCount, setUnfinishItemsCount] = useState(0); // 未完成的項目數量
@@ -223,7 +224,7 @@ function Home() {
           </div>
           <div className="flex flex-col items-center justify-center w-full gap-4 px-4 pb-4 list">
             {isLoading ? (
-              <p>資料讀取中...</p>
+              <Loading loading={isLoading} />
             ) : (
               showTodoList.map((item, index) => {
                 return (
