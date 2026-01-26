@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { setToken, setNickName } from "../utils/storage";
 import loginBanner from "../assets/images/login.png";
 import logo from "../assets/images/logo.svg";
 import { checkSignIn, signUp } from "../services/login";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { notify } from "../utils/toast.js";
 function LoginField({
   setEmail,
   setPassword,
@@ -184,7 +185,8 @@ function Login() {
   const [nickname, setNickname] = useState("");
   const [ensurePassword, setEnsurePassword] = useState("");
   const [showNickNameInputError, setShowNickNameInputError] = useState("");
-  const [showEnsurePasswordInputError, setShowEnsurePasswordInputError] = useState("");
+  const [showEnsurePasswordInputError, setShowEnsurePasswordInputError] =
+    useState("");
 
   const handleLogin = async () => {
     setShowEmailInputError("");
@@ -214,15 +216,17 @@ function Login() {
       if (res.status) {
         if (res.token) {
           setToken(res.token ? res.token : null);
-          setNickName(res.nickname?res.nickname : "")
+          setNickName(res.nickname ? res.nickname : "");
         }
-        navigate('/home', { replace: true });
+        notify.success(res.message ? res.message : "登入成功");
+        navigate("/home", { replace: true });
       } else {
         setShowEmailInputError(res.message);
         setShowPasswordInputError(res.message);
+        notify.error(res.message ? res.message : "登入失敗");
       }
     } catch (err) {
-      console.error("登入失敗:", err);
+      notify.error(err.message ? err.message : "登入失敗");
     }
   };
 
@@ -267,11 +271,14 @@ function Login() {
         nickname: nickname,
       };
       const res = await signUp(para);
-      if(res.status) {
+      if (res.status) {
         setIsRegister(false);
+        notify.success(res.message ? res.message :"註冊成功");
+      } else {
+        notify.error(res.message ? res.message : "註冊失敗");
       }
     } catch (err) {
-      console.error("註冊失敗", err);
+      notify.error(err.message? err.message :"註冊失敗");
     }
   };
 

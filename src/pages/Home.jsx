@@ -8,13 +8,12 @@ import {
   updateTodo,
 } from "../services/home";
 import { signOut } from "../services/login.js";
-import {getNickName} from "../utils/storage.js";
+import { getNickName } from "../utils/storage.js";
 import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
 import close from "../assets/images/close.svg";
-import { use } from "react";
-
+import { notify } from "../utils/toast.js";
 const tabs = [
   { id: "all", label: "全部", status: null },
   { id: "active", label: "待完成", status: false },
@@ -30,6 +29,7 @@ function Home() {
   const [unfinishItemsCount, setUnfinishItemsCount] = useState(0); // 未完成的項目數量
   const [newIteminputValue, setNewItemInputValue] = useState("");
   const [editTarget, setEditTarget] = useState({ id: null, content: "" });
+
   // 抓到清單列表
   const fetchData = useCallback(async () => {
     try {
@@ -57,15 +57,14 @@ function Home() {
   }, [showTodoList]);
 
   useEffect(() => {
-    if(selectTab.status == null) {
-      setShowTodoList(originTodoList)
+    if (selectTab.status == null) {
+      setShowTodoList(originTodoList);
       return;
     }
     const filterListByTab = originTodoList.filter((item) => {
-        return item.status == selectTab.status;
-    })
+      return item.status == selectTab.status;
+    });
     setShowTodoList(filterListByTab);
-    
   }, [originTodoList, selectTab]);
 
   // 新增清單項目
@@ -77,31 +76,46 @@ function Home() {
       content: newIteminputValue,
     };
     try {
-      await addTodo(para);
-      setNewItemInputValue("");
-      await fetchData();
+      const res = await addTodo(para);
+      if (res.status) {
+        setNewItemInputValue("");
+        notify.success(res.message ? res.message : "新增成功");
+        await fetchData();
+      } else {
+        notify.error(res.message ? res.message : "新增失敗");
+      }
     } catch (err) {
-      console.error("新增失敗", err);
+      notify.error(err.message ? err.message : "新增失敗");
     }
   };
 
   // 刪除某一筆項目
   const deleteTodoItem = async (id) => {
     try {
-      await deleteTodo(id);
-      await fetchData();
+      const res = await deleteTodo(id);
+      if (res.status) {
+        notify.success(res.message ? res.message : "刪除成功");
+        await fetchData();
+      } else {
+        notify.error(res.message ? res.message : "刪除失敗");
+      }
     } catch (err) {
-      console.error("刪除失敗", err);
+      notify.error(err.message ? err.message : "刪除失敗");
     }
   };
 
   // 切換事項狀態
   const switchStatus = async (id) => {
     try {
-      await changeTodoStatus(id);
-      await fetchData();
+      const res = await changeTodoStatus(id);
+      if (res.status) {
+        notify.success(res.message ? res.message : "更新狀態成功");
+        await fetchData();
+      } else {
+        notify.error(res.message ? res.message : "更新狀態失敗");
+      }
     } catch (err) {
-      console.error("更新狀態失敗", err);
+      notify.error(err.message ? err.message : "更新狀態失敗");
     }
   };
 
@@ -122,11 +136,19 @@ function Home() {
     }
 
     try {
-      await updateTodo({ id: editTarget.id, content: editTarget.content });
-      setEditTarget({ id: null, content: "" });
-      await fetchData();
+      const res = await updateTodo({
+        id: editTarget.id,
+        content: editTarget.content,
+      });
+      if (res.status) {
+        notify.success(res.message ? res.message : "修改成功");
+        setEditTarget({ id: null, content: "" });
+        await fetchData();
+      } else {
+        notify.error(res.message ? res.message : "修改失敗");
+      }
     } catch (err) {
-      console.error("修改失敗", err);
+      notify.error(err.message);
     }
   };
 
@@ -134,11 +156,16 @@ function Home() {
   const handleLogout = async (e) => {
     try {
       e.preventDefault();
-      await signOut();
-      localStorage.clear();
-      navigate("/", { replace: true });
+      const res = await signOut();
+      if (res.status) {
+        notify.success(res.message ? res.message : "登出成功");
+        localStorage.clear();
+        navigate("/", { replace: true });
+      } else {
+        notify.error(res.message ? res.message : "登出失敗");
+      }
     } catch (err) {
-      console.error("登出失敗", err);
+      notify.error(err.message ? err.message : "登出失敗");
     }
   };
 
