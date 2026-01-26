@@ -218,14 +218,15 @@ function Login() {
           setToken(res.token ? res.token : null);
           setNickName(res.nickname ? res.nickname : "");
         }
-        notify.success("登入成功");
+        notify.success(res.message ? res.message : "登入成功");
         navigate("/home", { replace: true });
       } else {
         setShowEmailInputError(res.message);
         setShowPasswordInputError(res.message);
+        notify.error(res.message ? res.message : "登入失敗");
       }
     } catch (err) {
-      notify.error("登入失敗");
+      notify.error(err.message ? err.message : "登入失敗");
     }
   };
 
@@ -272,12 +273,12 @@ function Login() {
       const res = await signUp(para);
       if (res.status) {
         setIsRegister(false);
-        notify.success("註冊成功");
+        notify.success(res.message ? res.message :"註冊成功");
       } else {
-        notify.error(res.message);
+        notify.error(res.message ? res.message : "註冊失敗");
       }
     } catch (err) {
-      notify.error("註冊失敗");
+      notify.error(err.message? err.message :"註冊失敗");
     }
   };
 
