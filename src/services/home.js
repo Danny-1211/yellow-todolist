@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { getToken } from "../utils/storage.js"
 const API_PATH = {
-  BASE_URL: import.meta.env.VITE_BASE_URL,
-  TODOS_URL: import.meta.env.VITE_API_TODOS,
+  BASE_URL: "https://todolist-api.hexschool.io",
+  TODOS_URL: "/todos/",
 }
 
 

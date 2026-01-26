@@ -2,10 +2,10 @@
 import axios from 'axios';
 import {getToken} from "../utils/storage.js"
 const API_PATH = {
-  BASE_URL: import.meta.env.VITE_BASE_URL,
-  SIGN_IN_URL: import.meta.env.VITE_API_SIGN_IN_URL,
-  SIGN_UP_URL: import.meta.env.VITE_API_SIGN_UP_URL,
-  SIGN_OUT_URL: import.meta.env.VITE_API_SIGN_OUT_URL
+  BASE_URL: "https://todolist-api.hexschool.io",
+  SIGN_IN_URL: "/users/sign_in",
+  SIGN_UP_URL: "/users/sign_up",
+  SIGN_OUT_URL: "/users/sign_out"
 }
 
 async function checkSignIn(para) { // 登入
