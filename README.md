@@ -1,16 +1,48 @@
-# React + Vite
+# 黃黃的待辦事項清單 | yellow-Todolist
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat&logo=react&color=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-7.2-646CFF?style=flat&logo=vite&color=646CFF)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=flat&logo=tailwindcss&color=38B2AC)
+![React Router](https://img.shields.io/badge/React_Router-7.12-CA4245?style=flat&logo=react-router&color=CA4245)
+![React-Toastify](https://img.shields.io/badge/React--Toastify-11.0.5-orange?style=flat&logo=react)
+![React-Spinners](https://img.shields.io/badge/React--Spinners-0.17.0-blue?style=flat&logo=react)
 
-Currently, two official plugins are available:
+使用 React 製作的 TodoList 待辦事項清單。
+使用者註冊帳號之後,便可以記錄自己想做的待辦事項
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📂 專案架構 | Project Structure
 
-## React Compiler
+```text
+yellow-todolist/
+├── public/              # 靜態資源
+├── src/                 # 原始碼目錄
+│   ├── assets/          # 靜態資源 (圖片、圖示)
+│   ├── components/      # 共用元件
+│   ├── pages/           # 頁面元件
+│   ├── router/          # 路由設定
+│   ├── services/        # 抓取 api 資料服務
+│   ├── utils/           # 共用的函式
+│   └── index.css        # 共用全域的樣式
+│   ├── App.jsx          # 應用程式主入口
+│   └── main.jsx         # 渲染入口
+├── index.html           # 應用程式入口 HTML
+├── package.json         # 專案資訊與相關套件
+├── vite.config.js       # Vite 設定檔
+└── eslint.config.js     # ESLint 設定檔
+```
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
 
-## Expanding the ESLint configuration
+## 🚀 啟動專案 | Quick Start
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 📦 安裝環境 (Requirement)
+
+請確認電腦已安裝以下版本：
+- **Node.js**: `v22.20.0`
+- **npm**: `v11.6.1`
+
+### ⚙️ 安裝與啟動 (Setup & Dev)
+
+```bash
+npm install
+npm run dev
+```
