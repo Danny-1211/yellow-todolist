@@ -13,6 +13,7 @@ import logo from "../assets/images/logo.svg";
 import add from "../assets/images/add.svg";
 import checked from "../assets/images/check.svg";
 import close from "../assets/images/close.svg";
+import empty from "../assets/images/empty.png";
 import { notify } from "../utils/toast.js";
 import Loading from "../components/Loading.jsx";
 const tabs = [
@@ -201,85 +202,98 @@ function Home() {
             </button>
           </div>
         </section>
-        <section className="flex flex-col items-start justify-start w-full bg-white rounded-[10px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.15)] max-w-78 lg:max-w-125 ">
-          <div className="flex w-full text-center filter-btns max-w-78 lg:max-w-125">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() =>
-                  setSelectTab({
-                    id: tab.id,
-                    status: tab.id == "all" ? null : tab.status,
-                  })
-                }
-                className={`flex-1 py-4 text-sm font-bold transition-colors cursor-pointer ${
-                  selectTab.id === tab.id
-                    ? "text-[#333333] border-b-2 border-[#333333]"
-                    : "text-[#9F9A91] border-b-2 border-[#9F9A91]"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-col items-center justify-center w-full gap-4 px-4 pb-4 list">
-            {isLoading ? (
-              <Loading loading={isLoading} />
-            ) : (
-              showTodoList.map((item, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="group flex items-center justify-between w-full transition-colors  border-b border-[#E5E5E5] hover:bg-[#FAFAFA] lg:border-0"
-                  >
-                    <div className="group  flex  py-4 w-full lg:border-b lg:border-[#E5E5E5]">
-                      <div className="flex gap-4 item-content">
-                        {item.status ? (
-                          <img
-                            src={checked}
-                            alt="checked"
-                            onClick={() => switchStatus(item.id)}
-                          />
-                        ) : (
-                          <div
-                            className="w-5 h-5 bg-[#FFFFFF] border border-[#9F9A91] rounded-[5px]"
-                            onClick={() => switchStatus(item.id)}
-                          ></div>
-                        )}
-                        {editTarget.id == item.id ? (
-                          <input
-                            type="text"
-                            className="border-b border-blue-500 grow focus:outline-none"
-                            value={editTarget.content}
-                            onChange={handleEditChange}
-                            onBlur={submitUpdate}
-                            autoFocus
-                          />
-                        ) : (
-                          <label
-                            className={`${item.status ? "line-through text-[#9F9A91]" : ""}`}
-                            onClick={() => startEditing(item)}
-                          >
-                            {item.content}
-                          </label>
-                        )}
+        {showTodoList.length == 0 ? (
+          <>
+            <main className="flex flex-col items-center justify-center gap-4 w-full mx-auto  max-w-78 lg:max-w-125 mt-4.25 lg:mt-10">
+              <p className="font-normal text-[#333333]">目前尚無待辦事項</p>
+              <img
+                src={empty}
+                alt="empty"
+                className="object-contain w-60 h-50"
+              />
+            </main>
+          </>
+        ) : (
+          <section className="flex flex-col items-start justify-start w-full bg-white rounded-[10px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.15)] max-w-78 lg:max-w-125 ">
+            <div className="flex w-full text-center filter-btns max-w-78 lg:max-w-125">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() =>
+                    setSelectTab({
+                      id: tab.id,
+                      status: tab.id == "all" ? null : tab.status,
+                    })
+                  }
+                  className={`flex-1 py-4 text-sm font-bold transition-colors cursor-pointer ${
+                    selectTab.id === tab.id
+                      ? "text-[#333333] border-b-2 border-[#333333]"
+                      : "text-[#9F9A91] border-b-2 border-[#9F9A91]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-col items-center justify-center w-full gap-4 px-4 pb-4 list">
+              {isLoading ? (
+                <Loading loading={isLoading} />
+              ) : (
+                showTodoList.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="group flex items-center justify-between w-full transition-colors  border-b border-[#E5E5E5] hover:bg-[#FAFAFA] lg:border-0"
+                    >
+                      <div className="group  flex  py-4 w-full lg:border-b lg:border-[#E5E5E5]">
+                        <div className="flex gap-4 item-content">
+                          {item.status ? (
+                            <img
+                              src={checked}
+                              alt="checked"
+                              onClick={() => switchStatus(item.id)}
+                            />
+                          ) : (
+                            <div
+                              className="w-5 h-5 bg-[#FFFFFF] border border-[#9F9A91] rounded-[5px]"
+                              onClick={() => switchStatus(item.id)}
+                            ></div>
+                          )}
+                          {editTarget.id == item.id ? (
+                            <input
+                              type="text"
+                              className="border-b border-blue-500 grow focus:outline-none"
+                              value={editTarget.content}
+                              onChange={handleEditChange}
+                              onBlur={submitUpdate}
+                              autoFocus
+                            />
+                          ) : (
+                            <label
+                              className={`${item.status ? "line-through text-[#9F9A91]" : ""}`}
+                              onClick={() => startEditing(item)}
+                            >
+                              {item.content}
+                            </label>
+                          )}
+                        </div>
+                      </div>
+                      <div
+                        className="transition-opacity duration-200 opacity-100 cursor-pointer item-close lg:opacity-0 lg:group-hover:opacity-100"
+                        onClick={() => deleteTodoItem(item.id)}
+                      >
+                        <img src={close} alt="close" />
                       </div>
                     </div>
-                    <div
-                      className="transition-opacity duration-200 opacity-100 cursor-pointer item-close lg:opacity-0 lg:group-hover:opacity-100"
-                      onClick={() => deleteTodoItem(item.id)}
-                    >
-                      <img src={close} alt="close" />
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-          <div className="unfinish-count w-full px-4 pb-4 font-normal text-[#333333] text-[14px]">
-            <p>{`${unfinishItemsCount} 個待完成項目`}</p>
-          </div>
-        </section>
+                  );
+                })
+              )}
+            </div>
+            <div className="unfinish-count w-full px-4 pb-4 font-normal text-[#333333] text-[14px]">
+              <p>{`${unfinishItemsCount} 個待完成項目`}</p>
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );
