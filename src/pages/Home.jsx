@@ -184,32 +184,36 @@ function Home() {
           </a>
         </div>
       </nav>
-      {showTodoList.length == 0 ? (
-        <>
-          <main className="flex flex-col items-center justify-center gap-4 w-full mx-auto  max-w-78 lg:max-w-125 mt-4.25 lg:mt-10">
-            <p className="font-normal text-[#333333]">目前尚無待辦事項</p>
-            <img src={empty} alt="empty" className="object-contain w-60 h-50" />
-          </main>
-        </>
-      ) : (
-        <main className="flex flex-col items-center justify-center gap-4 w-full mx-auto  max-w-78 lg:max-w-125 mt-4.25 lg:mt-10">
-          <section className="flex items-center justify-center w-full mx-auto max-w-78 lg:max-w-240">
-            <div className="flex items-center justify-center w-full max-w-125 bg-white rounded-[10px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.15)] p-1 ">
-              <input
-                type="text"
-                className="px-4 py-3 bg-transparent grow focus:outline-none"
-                placeholder="新增待辦事項"
-                value={newIteminputValue}
-                onChange={(e) => setNewItemInputValue(e.target.value)}
+      <main className="flex flex-col items-center justify-center gap-4 w-full mx-auto  max-w-78 lg:max-w-125 mt-4.25 lg:mt-10">
+        <section className="flex items-center justify-center w-full mx-auto max-w-78 lg:max-w-240">
+          <div className="flex items-center justify-center w-full max-w-125 bg-white rounded-[10px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.15)] p-1 ">
+            <input
+              type="text"
+              className="px-4 py-3 bg-transparent grow focus:outline-none"
+              placeholder="新增待辦事項"
+              value={newIteminputValue}
+              onChange={(e) => setNewItemInputValue(e.target.value)}
+            />
+            <button
+              className="bg-[#333333] w-10 h-10 py-[9.8px] px-2.5 rounded-[10px] flex items-center justify-center cursor-pointer"
+              onClick={() => addTodoItem()}
+            >
+              <img className="w-5 h-5" src={add} alt="add" />
+            </button>
+          </div>
+        </section>
+        {showTodoList.length == 0 ? (
+          <>
+            <main className="flex flex-col items-center justify-center gap-4 w-full mx-auto  max-w-78 lg:max-w-125 mt-4.25 lg:mt-10">
+              <p className="font-normal text-[#333333]">目前尚無待辦事項</p>
+              <img
+                src={empty}
+                alt="empty"
+                className="object-contain w-60 h-50"
               />
-              <button
-                className="bg-[#333333] w-10 h-10 py-[9.8px] px-2.5 rounded-[10px] flex items-center justify-center cursor-pointer"
-                onClick={() => addTodoItem()}
-              >
-                <img className="w-5 h-5" src={add} alt="add" />
-              </button>
-            </div>
-          </section>
+            </main>
+          </>
+        ) : (
           <section className="flex flex-col items-start justify-start w-full bg-white rounded-[10px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.15)] max-w-78 lg:max-w-125 ">
             <div className="flex w-full text-center filter-btns max-w-78 lg:max-w-125">
               {tabs.map((tab) => (
@@ -289,8 +293,8 @@ function Home() {
               <p>{`${unfinishItemsCount} 個待完成項目`}</p>
             </div>
           </section>
-        </main>
-      )}
+        )}
+      </main>
     </div>
   );
 }
