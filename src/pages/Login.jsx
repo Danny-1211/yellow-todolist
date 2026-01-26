@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { setToken, setNickName } from "../utils/storage";
 import loginBanner from "../assets/images/login.png";
 import logo from "../assets/images/logo.svg";
-import { checkSignIn, signUp } from "../services/login";
+import { checkSignIn, signUp, checkoutToken } from "../services/login";
+import { getToken } from "../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { notify } from "../utils/toast.js";
 import Loading from "../components/Loading.jsx";
@@ -207,6 +208,28 @@ function Login() {
   const [showNickNameInputError, setShowNickNameInputError] = useState("");
   const [showEnsurePasswordInputError, setShowEnsurePasswordInputError] =
     useState("");
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = getToken();
+
+      if (!token) return;
+
+      try {
+        const res = await checkoutToken();
+        if (res.status) {
+          notify.success("歡迎回來！");
+          navigate("/home", { replace: true });
+        } else {
+          localStorage.clear();
+          notify.error("登入逾時，請重新登入");
+        }
+      } catch (err) {
+        console.error("TOKEN 過期", err);
+      }
+    };
+    checkToken();
+  }, []);
 
   const handleLogin = async () => {
     setShowEmailInputError("");
