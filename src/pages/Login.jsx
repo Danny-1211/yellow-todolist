@@ -65,7 +65,7 @@ function LoginField({
         ) : (
           <>
             <button
-              className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px]"
+              className="bg-[#333333] py-2 px-12 border-[#333333] rounded-[10px] cursor-pointer"
               type="button"
               onClick={handleLogin}
             >
@@ -73,7 +73,7 @@ function LoginField({
             </button>
           </>
         )}
-        <button type="button" onClick={() => setIsRegister(true)}>
+        <button className="cursor-pointer" type="button" onClick={() => setIsRegister(true)}>
           <p className="text-[#333333] font-bold">註冊帳號</p>
         </button>
       </div>
