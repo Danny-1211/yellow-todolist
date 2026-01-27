@@ -202,7 +202,7 @@ function Home() {
             </button>
           </div>
         </section>
-        {showTodoList.length == 0 ? (
+        {originTodoList.length == 0 ? (
           <>
             <main className="flex flex-col items-center justify-center gap-4 w-full mx-auto  max-w-78 lg:max-w-125 mt-4.25 lg:mt-10">
               <p className="font-normal text-[#333333]">目前尚無待辦事項</p>
